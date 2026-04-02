@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --surface: #f7f7f5;
@@ -10,6 +12,18 @@
   --border: #e9e9e7;
   --accent: #2383e2;
   color-scheme: light;
+}
+
+.dark {
+  --background: #191919;
+  --surface: #252525;
+  --surface-hover: #2f2f2f;
+  --foreground: #ececec;
+  --muted: #9b9a97;
+  --faint: #5a5a58;
+  --border: #373737;
+  --accent: #6f9fe4;
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -34,4 +48,8 @@ body {
 body {
   background: var(--background);
   color: var(--foreground);
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 25%, transparent);
 }
