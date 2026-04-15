@@ -121,7 +121,7 @@ export async function getPosts(): Promise<TPost[]> {
     return []
   }
 
-  return allResults.map((page: any) => {
+  const posts: TPost[] = allResults.map((page: any) => {
     const props = page.properties || {}
     const date = getDateProperty(props.date) || getDateProperty(props.Date)
     return {
@@ -138,4 +138,16 @@ export async function getPosts(): Promise<TPost[]> {
       createdTime: page.created_time,
     }
   })
+
+  return posts
+    .filter((post) => {
+      if (!post.title || !post.slug) return false
+      if (post.status && post.status !== "Public") return false
+      return true
+    })
+    .sort((a, b) => {
+      const dateA = new Date(a.date?.start_date || a.createdTime).getTime()
+      const dateB = new Date(b.date?.start_date || b.createdTime).getTime()
+      return dateB - dateA
+    })
 }
