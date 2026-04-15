@@ -1,5 +1,5 @@
 import { Client } from "@notionhq/client"
-import type { TPost } from "./types"
+import type { TPost, TPostType, TPostStatus } from "./types"
 
 function getTextProperty(prop: any): string {
   if (!prop) return ""
@@ -23,6 +23,25 @@ function getFirstTextProperty(props: Record<string, any>): string {
   const titleProp = Object.values(props).find((p: any) => p?.type === "title")
   if (titleProp) return getTextProperty(titleProp)
   return ""
+}
+
+function getMultiSelectProperty(prop: any): string[] | undefined {
+  if (!prop || prop.type !== "multi_select") return undefined
+  return (prop.multi_select || [])
+    .map((s: any) => s.name)
+    .filter(Boolean)
+}
+
+function getSelectProperty(prop: any): string | undefined {
+  if (!prop || prop.type !== "select" || !prop.select) return undefined
+  return prop.select.name
+}
+
+function getDateProperty(
+  prop: any
+): { start_date: string } | undefined {
+  if (!prop || prop.type !== "date" || !prop.date) return undefined
+  return prop.date.start ? { start_date: prop.date.start } : undefined
 }
 
 function getFileProperty(prop: any): string | undefined {
@@ -104,12 +123,18 @@ export async function getPosts(): Promise<TPost[]> {
 
   return allResults.map((page: any) => {
     const props = page.properties || {}
+    const date = getDateProperty(props.date) || getDateProperty(props.Date)
     return {
       id: page.id,
       title: getFirstTextProperty(props),
       slug: getTextProperty(props.slug || props.Slug),
       summary: getTextProperty(props.summary || props.Summary),
+      type: getSelectProperty(props.type || props.Type) as TPostType | undefined,
+      status: getSelectProperty(props.status || props.Status) as TPostStatus | undefined,
+      date,
       thumbnail: getFileProperty(props.thumbnail || props.Thumbnail),
+      tags: getMultiSelectProperty(props.tags || props.Tags),
+      category: getSelectProperty(props.category || props.Category),
       createdTime: page.created_time,
     }
   })
