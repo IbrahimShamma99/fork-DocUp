@@ -68,6 +68,7 @@ async function getDataSourceId(): Promise<string | undefined> {
   const databaseId =
     process.env.NOTION_DATABASE_ID || process.env.NEXT_PUBLIC_NOTION_PAGE_ID
   if (!databaseId) return undefined
+  if (_dataSourceId) return _dataSourceId
   const notion = getClient()
   if (!notion) return undefined
   _dataSourceId = await resolveDataSource(notion, databaseId)
@@ -150,4 +151,52 @@ export async function getPosts(): Promise<TPost[]> {
       const dateB = new Date(b.date?.start_date || b.createdTime).getTime()
       return dateB - dateA
     })
+}
+
+async function fetchPageBlockChildren(
+  notion: Client,
+  blockId: string,
+  depth: number
+): Promise<any[]> {
+  if (depth > 5) return []
+  const blocks: any[] = []
+  try {
+    let cursor: string | undefined
+    do {
+      const res: any = await notion.blocks.children.list({
+        block_id: blockId,
+        start_cursor: cursor,
+        page_size: 100,
+      })
+      for (const b of res.results || []) {
+        const block: any = { ...b }
+        if (b.has_children) {
+          block.children = await fetchPageBlockChildren(
+            notion,
+            b.id,
+            depth + 1
+          )
+        }
+        blocks.push(block)
+      }
+      cursor = res.has_more ? res.next_cursor : undefined
+    } while (cursor)
+  } catch (e) {
+    console.error("Failed to fetch blocks for", blockId, (e as any).message)
+  }
+  return blocks
+}
+
+export async function getPostBlocks(pageId: string): Promise<any[]> {
+  const notion = getClient()
+  if (!notion) return []
+  return fetchPageBlockChildren(notion, pageId, 0)
+}
+
+export async function getPostBySlug(slug: string) {
+  const posts = await getPosts()
+  const post = posts.find((p) => p.slug === slug)
+  if (!post) return null
+  const blocks = await getPostBlocks(post.id)
+  return { post, blocks }
 }
