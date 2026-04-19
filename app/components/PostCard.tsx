@@ -1,5 +1,6 @@
 import type { TPost } from "@/app/lib/types"
 import Image from "next/image"
+import Link from "next/link"
 
 function formatDate(dateStr: string): string {
   try {
@@ -17,7 +18,10 @@ export default function PostCard({ post }: { post: TPost }) {
   const date = post.date?.start_date || post.createdTime
 
   return (
-    <div className="group flex items-center justify-between gap-4 rounded-lg px-3 py-3 transition-colors hover:bg-surface">
+    <Link
+      href={`/${post.slug}`}
+      className="group flex items-center justify-between gap-4 rounded-lg px-3 py-3 transition-colors hover:bg-surface"
+    >
       <div className="min-w-0 flex-1">
         <h2 className="truncate text-[15px] font-medium text-foreground group-hover:text-accent">
           {post.title}
@@ -42,6 +46,6 @@ export default function PostCard({ post }: { post: TPost }) {
           />
         </div>
       )}
-    </div>
+    </Link>
   )
 }
