@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import type { TPost } from "@/app/lib/types"
 import PostCard from "./PostCard"
 
@@ -8,7 +9,15 @@ function pluralize(count: number, word: string): string {
 }
 
 export default function Feed({ posts }: { posts: TPost[] }) {
-  const count = posts.length
+  const [query, setQuery] = useState("")
+
+  const q = query.trim().toLowerCase()
+  const filteredPosts = q
+    ? posts.filter((post) => (post.title || "").toLowerCase().includes(q))
+    : posts
+
+  const count = filteredPosts.length
+  const total = posts.length
 
   return (
     <div className="w-full pt-16">
@@ -34,6 +43,8 @@ export default function Feed({ posts }: { posts: TPost[] }) {
         </svg>
         <input
           type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
           placeholder="Search"
           className="w-full rounded-lg border border-border bg-surface py-[7px] pl-9 pr-12 text-[15px] text-foreground placeholder-faint transition-colors focus:border-accent focus:bg-background focus:outline-none"
         />
@@ -45,11 +56,11 @@ export default function Feed({ posts }: { posts: TPost[] }) {
       </div>
 
       <p className="mb-4 text-[12px] text-faint">
-        {pluralize(count, "post")}
+        {pluralize(count, "post")} of {pluralize(total, "post")}
       </p>
 
       <div className="flex flex-col">
-        {posts.map((post) => (
+        {filteredPosts.map((post) => (
           <PostCard key={post.id} post={post} />
         ))}
       </div>
