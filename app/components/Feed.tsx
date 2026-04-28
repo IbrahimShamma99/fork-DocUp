@@ -13,7 +13,10 @@ export default function Feed({ posts }: { posts: TPost[] }) {
 
   const q = query.trim().toLowerCase()
   const filteredPosts = q
-    ? posts.filter((post) => (post.title || "").toLowerCase().includes(q))
+    ? posts.filter((post) =>
+        (post.title || "").toLowerCase().includes(q) ||
+        (post.summary || "").toLowerCase().includes(q)
+      )
     : posts
 
   const count = filteredPosts.length
