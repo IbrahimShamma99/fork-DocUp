@@ -62,11 +62,17 @@ export default function Feed({ posts }: { posts: TPost[] }) {
         {pluralize(count, "post")} of {pluralize(total, "post")}
       </p>
 
-      <div className="flex flex-col">
-        {filteredPosts.map((post) => (
-          <PostCard key={post.id} post={post} />
-        ))}
-      </div>
+      {count === 0 ? (
+        <p className="py-24 text-center text-[15px] text-muted">
+          No posts found.
+        </p>
+      ) : (
+        <div className="flex flex-col">
+          {filteredPosts.map((post) => (
+            <PostCard key={post.id} post={post} />
+          ))}
+        </div>
+      )}
     </div>
   )
 }

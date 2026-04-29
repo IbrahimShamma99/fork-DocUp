@@ -10,7 +10,10 @@ export function normalizePost(post: TPost) {
 }
 
 export function filterPosts(posts: TPost[], query: string): TPost[] {
-  const q = query.trim().toLowerCase()
+  const trimmed = query.trim()
+  if (!trimmed) return posts
+
+  const q = trimmed.toLowerCase()
   return posts.filter((post) => {
     const n = normalizePost(post)
     return n.title.includes(q) || n.summary.includes(q)
