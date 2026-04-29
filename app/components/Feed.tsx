@@ -12,8 +12,10 @@ export default function Feed({ posts }: { posts: TPost[] }) {
   const [query, setQuery] = useState("")
 
   const trimmed = query.trim()
-  const isTagMode = trimmed.charAt(0) === "/"
-  const term = isTagMode ? trimmed.slice(1).toLowerCase() : ""
+  const first = trimmed.charAt(0)
+  const isTagMode = first === "/"
+  const isCategoryMode = first === "#"
+  const term = isTagMode || isCategoryMode ? trimmed.slice(1).toLowerCase() : ""
   const hasQuery = trimmed.length > 0
 
   let filteredPosts = posts
@@ -22,6 +24,12 @@ export default function Feed({ posts }: { posts: TPost[] }) {
       filteredPosts = term
         ? posts.filter((post) =>
             (post.tags || []).some((tag) => tag.toLowerCase().includes(term))
+          )
+        : posts
+    } else if (isCategoryMode) {
+      filteredPosts = term
+        ? posts.filter((post) =>
+            (post.category || "").toLowerCase().includes(term)
           )
         : posts
     } else {
