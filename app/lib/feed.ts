@@ -13,6 +13,15 @@ export function filterPosts(posts: TPost[], query: string): TPost[] {
   const trimmed = query.trim()
   if (!trimmed) return posts
 
+  const isTagMode = trimmed.charAt(0) === "/"
+  if (isTagMode) {
+    const term = trimmed.slice(1).toLowerCase()
+    if (!term) return posts
+    return posts.filter((post) =>
+      normalizePost(post).tags.some((tag) => tag.includes(term))
+    )
+  }
+
   const q = trimmed.toLowerCase()
   return posts.filter((post) => {
     const n = normalizePost(post)

@@ -11,13 +11,27 @@ function pluralize(count: number, word: string): string {
 export default function Feed({ posts }: { posts: TPost[] }) {
   const [query, setQuery] = useState("")
 
-  const q = query.trim().toLowerCase()
-  const filteredPosts = q
-    ? posts.filter((post) =>
+  const trimmed = query.trim()
+  const isTagMode = trimmed.charAt(0) === "/"
+  const term = isTagMode ? trimmed.slice(1).toLowerCase() : ""
+  const hasQuery = trimmed.length > 0
+
+  let filteredPosts = posts
+  if (hasQuery) {
+    if (isTagMode) {
+      filteredPosts = term
+        ? posts.filter((post) =>
+            (post.tags || []).some((tag) => tag.toLowerCase().includes(term))
+          )
+        : posts
+    } else {
+      const q = trimmed.toLowerCase()
+      filteredPosts = posts.filter((post) =>
         (post.title || "").toLowerCase().includes(q) ||
         (post.summary || "").toLowerCase().includes(q)
       )
-    : posts
+    }
+  }
 
   const count = filteredPosts.length
   const total = posts.length
