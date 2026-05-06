@@ -13,10 +13,16 @@ export default function Feed({ posts }: { posts: TPost[] }) {
 
   const trimmed = query.trim()
   const first = trimmed.charAt(0)
-  const isTagMode = first === "/"
-  const isCategoryMode = first === "#"
-  const term = isTagMode || isCategoryMode ? trimmed.slice(1).toLowerCase() : ""
+
+  const mode: "tag" | "category" | null =
+    first === "/" ? "tag" : first === "#" ? "category" : null
+
+  const isTagMode = mode === "tag"
+  const isCategoryMode = mode === "category"
+
+  const term = mode ? trimmed.slice(1).toLowerCase() : ""
   const hasQuery = trimmed.length > 0
+  const hasFilter = mode !== null
 
   let filteredPosts = posts
   if (hasQuery) {
