@@ -56,6 +56,30 @@ export function normalizePost(post: TPost) {
   }
 }
 
+export function collectValues(
+  posts: TPost[],
+  mode: TFeedMode
+): string[] {
+  const set = new Set<string>()
+  posts.forEach((post) => {
+    const n = normalizePost(post)
+    if (mode === "tag") n.tags.forEach((t) => set.add(t))
+    else if (mode === "category" && n.category) set.add(n.category)
+  })
+  return Array.from(set).sort((a, b) => a.localeCompare(b))
+}
+
+export function suggestMatches(
+  posts: TPost[],
+  mode: TFeedMode,
+  term: string
+): string[] {
+  const q = term.toLowerCase()
+  const list = collectValues(posts, mode)
+  if (!q) return list
+  return list.filter((item) => item.includes(q))
+}
+
 export function filterPosts(
   posts: TPost[],
   parsed: TFeedParsed

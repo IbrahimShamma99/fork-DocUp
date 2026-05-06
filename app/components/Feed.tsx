@@ -24,6 +24,28 @@ export default function Feed({ posts }: { posts: TPost[] }) {
   const hasQuery = trimmed.length > 0
   const hasFilter = mode !== null
 
+  const allTags = Array.from(
+    new Set<string>(
+      posts.flatMap((post) => post.tags || [])
+    )
+  ).sort((a, b) => a.localeCompare(b))
+
+  const allCategories = Array.from(
+    new Set<string>(
+      posts.map((post) => post.category).filter((c): c is string => Boolean(c))
+    )
+  ).sort((a, b) => a.localeCompare(b))
+
+  const suggestions = hasFilter
+    ? (isTagMode ? allTags : allCategories).filter((item) =>
+        term ? item.toLowerCase().includes(term) : true
+      )
+    : []
+
+  const applySuggestion = (value: string) => {
+    setQuery(`${isTagMode ? "/" : "#"}${value}`)
+  }
+
   let filteredPosts = posts
   if (hasQuery) {
     if (isTagMode) {
@@ -85,6 +107,23 @@ export default function Feed({ posts }: { posts: TPost[] }) {
           </kbd>
         </div>
       </div>
+
+      {hasFilter && (
+        <div className="mb-4 max-h-40 overflow-y-auto rounded-lg border border-border bg-surface p-3">
+          <div className="flex flex-wrap gap-1.5">
+            {suggestions.map((item) => (
+              <button
+                key={item}
+                type="button"
+                onClick={() => applySuggestion(item)}
+                className="rounded-full border border-border bg-background px-2.5 py-0.5 text-[13px] text-muted transition-colors hover:border-accent hover:bg-accent hover:text-white"
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <p className="mb-4 text-[12px] text-faint">
         {pluralize(count, "post")} of {pluralize(total, "post")}
