@@ -98,34 +98,47 @@ export default function Feed({ posts }: { posts: TPost[] }) {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search"
+          placeholder={
+            isTagMode
+              ? "Filter by tag…"
+              : isCategoryMode
+              ? "Filter by category…"
+              : "Search"
+          }
           className="w-full rounded-lg border border-border bg-surface py-[7px] pl-9 pr-12 text-[15px] text-foreground placeholder-faint transition-colors focus:border-accent focus:bg-background focus:outline-none"
         />
         <div className="pointer-events-none absolute right-3 top-1/2 flex -translate-y-1/2 gap-1">
           <kbd className="rounded border border-border bg-background px-1.5 py-0.5 text-[11px] font-medium text-faint">
-            Search
+            {hasFilter ? (isTagMode ? "/" : "#") : "Search"}
           </kbd>
         </div>
       </div>
 
       {hasFilter && (
         <div className="mb-4 max-h-40 overflow-y-auto rounded-lg border border-border bg-surface p-3">
-          <div className="flex flex-wrap gap-1.5">
-            {suggestions.map((item) => (
-              <button
-                key={item}
-                type="button"
-                onClick={() => applySuggestion(item)}
-                className="rounded-full border border-border bg-background px-2.5 py-0.5 text-[13px] text-muted transition-colors hover:border-accent hover:bg-accent hover:text-white"
-              >
-                {item}
-              </button>
-            ))}
-          </div>
+          {suggestions.length === 0 ? (
+            <p className="text-[13px] text-faint">
+              No {isTagMode ? "tags" : "categories"} match &quot;{term}
+              &quot;
+            </p>
+          ) : (
+            <div className="flex flex-wrap gap-1.5">
+              {suggestions.map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  onClick={() => applySuggestion(item)}
+                  className="rounded-full border border-border bg-background px-2.5 py-0.5 text-[13px] text-muted transition-colors hover:border-accent hover:bg-accent hover:text-white"
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
-      <p className="mb-4 text-[12px] text-faint">
+      <p className="mb-4 text-[13px] text-faint">
         {pluralize(count, "post")} of {pluralize(total, "post")}
       </p>
 
