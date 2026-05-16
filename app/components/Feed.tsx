@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import type { TPost } from "@/app/lib/types"
 import PostCard from "./PostCard"
 
@@ -24,53 +24,64 @@ export default function Feed({ posts }: { posts: TPost[] }) {
   const hasQuery = trimmed.length > 0
   const hasFilter = mode !== null
 
-  const allTags = Array.from(
-    new Set<string>(
-      posts.flatMap((post) => post.tags || [])
+  const allTags = useMemo(() => {
+    const set = new Set<string>()
+    posts.forEach((post) =>
+      (post.tags || []).forEach((tag) => set.add(tag))
     )
-  ).sort((a, b) => a.localeCompare(b))
+    return Array.from(set).sort((a, b) => a.localeCompare(b))
+  }, [posts])
 
-  const allCategories = Array.from(
-    new Set<string>(
-      posts.map((post) => post.category).filter((c): c is string => Boolean(c))
+  const allCategories = useMemo(() => {
+    const set = new Set<string>()
+    posts.forEach((post) => {
+      if (post.category) set.add(post.category)
+    })
+    return Array.from(set).sort((a, b) => a.localeCompare(b))
+  }, [posts])
+
+  const suggestions = useMemo(() => {
+    if (!hasFilter) return []
+    const source = isTagMode ? allTags : allCategories
+    if (!term) return source
+    return source.filter((item) =>
+      item.toLowerCase().includes(term)
     )
-  ).sort((a, b) => a.localeCompare(b))
+  }, [hasFilter, isTagMode, allTags, allCategories, term])
 
-  const suggestions = hasFilter
-    ? (isTagMode ? allTags : allCategories).filter((item) =>
-        term ? item.toLowerCase().includes(term) : true
+  const filteredPosts = useMemo(() => {
+    if (!hasQuery) return posts
+
+    if (isTagMode) {
+      if (!term) return posts
+      return posts.filter((post) =>
+        (post.tags || []).some((tag) =>
+          tag.toLowerCase().includes(term)
+        )
       )
-    : []
+    }
+
+    if (isCategoryMode) {
+      if (!term) return posts
+      return posts.filter((post) =>
+        (post.category || "").toLowerCase().includes(term)
+      )
+    }
+
+    const q = trimmed.toLowerCase()
+    return posts.filter((post) => {
+      const title = post.title?.toLowerCase() || ""
+      const summary = post.summary?.toLowerCase() || ""
+      return title.includes(q) || summary.includes(q)
+    })
+  }, [posts, hasQuery, isTagMode, isCategoryMode, term, trimmed])
+
+  const count = filteredPosts.length
+  const total = posts.length
 
   const applySuggestion = (value: string) => {
     setQuery(`${isTagMode ? "/" : "#"}${value}`)
   }
-
-  let filteredPosts = posts
-  if (hasQuery) {
-    if (isTagMode) {
-      filteredPosts = term
-        ? posts.filter((post) =>
-            (post.tags || []).some((tag) => tag.toLowerCase().includes(term))
-          )
-        : posts
-    } else if (isCategoryMode) {
-      filteredPosts = term
-        ? posts.filter((post) =>
-            (post.category || "").toLowerCase().includes(term)
-          )
-        : posts
-    } else {
-      const q = trimmed.toLowerCase()
-      filteredPosts = posts.filter((post) =>
-        (post.title || "").toLowerCase().includes(q) ||
-        (post.summary || "").toLowerCase().includes(q)
-      )
-    }
-  }
-
-  const count = filteredPosts.length
-  const total = posts.length
 
   return (
     <div className="w-full pt-16">
