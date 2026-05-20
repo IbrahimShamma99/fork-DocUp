@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { getPostBySlug } from "../lib/notion"
+import { renderBlocks } from "../components/NotionBlockRenderer"
 import TopBar from "../components/TopBar"
 
 export const dynamic = "force-dynamic"
@@ -38,7 +39,7 @@ export default async function PostPage({
   const data = await getPostBySlug(slug)
   if (!data) notFound()
 
-  const { post } = data
+  const { post, blocks } = data
   const date = post.date?.start_date || post.createdTime
 
   return (
@@ -67,6 +68,10 @@ export default async function PostPage({
               )}
             </div>
           </header>
+
+          <div className="text-[16px]">
+            {renderBlocks(blocks)}
+          </div>
         </article>
       </main>
     </div>
