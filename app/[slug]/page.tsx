@@ -46,7 +46,7 @@ export default async function PostPage({
   return (
     <div className="min-h-screen bg-background">
       <TopBar />
-      <main className="mx-auto w-full max-w-2xl px-4 pb-24 pt-8">
+      <main className="mx-auto w-full max-w-[680px] px-4 pb-24 pt-10">
         <Link
           href="/"
           className="mb-6 inline-flex items-center gap-1 text-[13px] text-muted transition-colors hover:text-foreground"
@@ -68,7 +68,7 @@ export default async function PostPage({
 
         <article>
           <header className="mb-8">
-            <h1 className="text-[30px] font-bold leading-tight tracking-tight text-foreground">
+            <h1 className="text-[34px] font-bold leading-tight tracking-[-0.02em] text-foreground">
               {post.title}
             </h1>
             <div className="mt-2 flex items-center gap-1.5 text-[14px] text-muted">
