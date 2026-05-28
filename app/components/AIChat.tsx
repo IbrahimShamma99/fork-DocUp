@@ -1,22 +1,33 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 
 export default function AIChat() {
   const [open, setOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const endRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && open) {
+        setOpen(false)
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [open])
 
   const drawerContent = (
     <>
       <div
         aria-hidden
         onClick={() => setOpen(false)}
-        className={`fixed inset-0 z-40 bg-black/20 transition-opacity duration-300 ${
+        className={`fixed inset-0 z-40 bg-black/20 transition-all duration-300 ${
           open ? "opacity-100" : "pointer-events-none opacity-0 invisible"
         }`}
       />
@@ -24,7 +35,9 @@ export default function AIChat() {
         aria-hidden={!open}
         tabIndex={open ? undefined : -1}
         className={`fixed bottom-0 right-0 z-50 flex w-full flex-col bg-background shadow-2xl transition-all duration-300
+          /* Mobile: bottom sheet */
           left-0 top-auto h-[85vh] max-h-[85vh] rounded-t-2xl border-t border-border
+          /* Desktop: right sidebar */
           sm:left-auto sm:top-12 sm:h-[calc(100dvh-48px)] sm:max-h-none sm:max-w-[320px] sm:rounded-none sm:border-l sm:border-t-0
           ${
             open
@@ -32,10 +45,19 @@ export default function AIChat() {
               : "translate-y-full sm:translate-x-full sm:translate-y-0 opacity-0 invisible"
           }`}
       >
-        <div className="flex h-11 shrink-0 items-center justify-between border-b border-border bg-background px-4">
-          <span className="text-[14px] font-semibold text-foreground">AI Chat</span>
+        {/* Mobile drag indicator */}
+        <div className="flex shrink-0 items-center justify-center pt-2.5 pb-1 sm:hidden">
+          <div className="h-1 w-10 rounded-full bg-border" />
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto bg-background px-4 py-5" />
+
+        <header className="flex h-11 shrink-0 items-center justify-between border-b border-border bg-background px-4">
+          <span className="text-[14px] font-semibold text-foreground">AI Chat</span>
+        </header>
+
+        {/* Messages */}
+        <div className="min-h-0 flex-1 overflow-y-auto bg-background px-4 py-5">
+          <div ref={endRef} />
+        </div>
       </aside>
     </>
   )
