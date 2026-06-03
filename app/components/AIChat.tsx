@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 
+type TMessage = { id: number; role: "user" | "assistant"; content: string }
+
 function AssistantIcon() {
   return (
     <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent/90 text-background">
@@ -21,6 +23,7 @@ function AssistantIcon() {
 export default function AIChat() {
   const [open, setOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [messages, setMessages] = useState<TMessage[]>([])
   const endRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -81,6 +84,17 @@ export default function AIChat() {
             <span className="text-[14px] font-semibold text-foreground">AI Chat</span>
           </div>
           <div className="flex items-center gap-1">
+            {messages.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setMessages([])}
+                title="Clear chat"
+                aria-label="Clear chat"
+                className="flex h-7 px-2 items-center justify-center rounded-md text-[11px] font-medium text-faint transition-colors hover:bg-surface-hover hover:text-foreground"
+              >
+                Clear
+              </button>
+            )}
             {closeButton}
           </div>
         </header>
