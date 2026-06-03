@@ -37,6 +37,19 @@ export default function AIChat() {
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [open])
 
+  const closeButton = (
+    <button
+      type="button"
+      onClick={() => setOpen(false)}
+      aria-label="Close AI chat"
+      className="flex h-7 w-7 items-center justify-center rounded-md text-faint transition-colors hover:bg-surface-hover hover:text-foreground"
+    >
+      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  )
+
   const drawerContent = (
     <>
       <div
@@ -66,6 +79,9 @@ export default function AIChat() {
           <div className="flex items-center gap-2">
             <AssistantIcon />
             <span className="text-[14px] font-semibold text-foreground">AI Chat</span>
+          </div>
+          <div className="flex items-center gap-1">
+            {closeButton}
           </div>
         </header>
 
