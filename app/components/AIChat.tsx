@@ -23,12 +23,26 @@ function AssistantIcon() {
 export default function AIChat() {
   const [open, setOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [draft, setDraft] = useState("")
   const [messages, setMessages] = useState<TMessage[]>([])
   const endRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  useEffect(() => {
+    if (open) {
+      endRef.current?.scrollIntoView({ behavior: "smooth" })
+    }
+  }, [messages, open])
+
+  useEffect(() => {
+    if (open) {
+      inputRef.current?.focus()
+    }
+  }, [open])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -99,9 +113,30 @@ export default function AIChat() {
           </div>
         </header>
 
-        <div className="min-h-0 flex-1 overflow-y-auto bg-background px-4 py-5">
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto bg-background px-4 py-5">
           <div ref={endRef} />
         </div>
+
+        {/* Compose */}
+        <footer className="shrink-0 border-t border-border bg-background p-3">
+          <div className="relative rounded-xl border border-border bg-surface focus-within:border-accent focus-within:bg-background transition-colors">
+            <textarea
+              ref={inputRef}
+              rows={2}
+              maxLength={400}
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              placeholder="Ask anything…"
+              className="w-full resize-none bg-transparent p-3 pb-8 text-[13.5px] text-foreground placeholder-faint focus:outline-none"
+            />
+
+            <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between">
+              <span className="text-[10px] font-medium text-faint">
+                {draft.length}/400
+              </span>
+            </div>
+          </div>
+        </footer>
       </aside>
     </>
   )
