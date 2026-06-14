@@ -199,6 +199,17 @@ export default function AIChat() {
               <span className="text-[10px] font-medium text-faint">
                 {draft.length}/400
               </span>
+              <button
+                type="button"
+                onClick={() => void send()}
+                disabled={!draft.trim() || sending}
+                className="flex items-center gap-1 rounded-md bg-accent px-2.5 py-1 text-[12px] font-medium text-background transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:bg-surface-hover disabled:text-faint"
+              >
+                <span>Send</span>
+                <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </button>
             </div>
           </div>
         </footer>
