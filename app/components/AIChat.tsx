@@ -7,6 +7,8 @@ type TMessage = { id: number; role: "user" | "assistant"; content: string }
 
 let nextId = 1
 
+const SUGGESTIONS = ["/ml", "/nextjs", "????", "#essays", "#notes", "/react", "#dev"]
+
 function AssistantIcon() {
   return (
     <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent/90 text-background">
@@ -57,6 +59,22 @@ export default function AIChat() {
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [open])
+
+  const replaceQuery = (curr: string, slot: string) => {
+    const pattern = /\/\s(?=\S)|#\s(?=\S)|(?<=^|\s)[a-z0-9]+/gi
+    let replaced = false
+    const next = curr.replace(pattern, (m) => {
+      if (replaced) return m
+      replaced = true
+      return m.trim().startsWith("/") || m.trim().startsWith("#") ? slot : slot
+    })
+    return replaced ? next.trim() : curr.length ? `${curr.replace(/\s*$/, "")} ${slot}` : slot
+  }
+
+  const applySuggestion = (slot: string) => {
+    setDraft((d) => replaceQuery(d, slot))
+    inputRef.current?.focus()
+  }
 
   const send = async () => {
     const text = draft.trim()
@@ -176,6 +194,19 @@ export default function AIChat() {
                   the blog.
                 </p>
               </div>
+
+              <div className="mt-2 flex max-w-[240px] flex-wrap items-center justify-center gap-1.5">
+                {SUGGESTIONS.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => applySuggestion(s)}
+                    className="rounded-full border border-border bg-surface px-2.5 py-1 text-[11.5px] font-medium text-muted transition-colors hover:border-accent hover:text-foreground"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
@@ -215,6 +246,19 @@ export default function AIChat() {
 
         {/* Compose */}
         <footer className="shrink-0 border-t border-border bg-background p-3">
+          <div className="mb-2 flex flex-wrap items-center gap-1.5">
+            {SUGGESTIONS.slice(0, 4).map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => applySuggestion(s)}
+                className="rounded-md border border-border bg-surface px-2 py-0.5 text-[11px] font-medium text-muted transition-colors hover:border-accent hover:text-foreground"
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+
           <div className="relative rounded-xl border border-border bg-surface focus-within:border-accent focus-within:bg-background transition-colors">
             <textarea
               ref={inputRef}
