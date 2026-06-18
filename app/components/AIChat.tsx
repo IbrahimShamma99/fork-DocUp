@@ -27,6 +27,7 @@ export default function AIChat() {
   const [mounted, setMounted] = useState(false)
   const [draft, setDraft] = useState("")
   const [sending, setSending] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [messages, setMessages] = useState<TMessage[]>([])
   const endRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -61,6 +62,7 @@ export default function AIChat() {
     const text = draft.trim()
     if (!text || sending) return
 
+    setError(null)
     const userMsg: TMessage = { id: nextId++, role: "user", content: text }
     const nextMessages = [...messages, userMsg]
     setMessages(nextMessages)
@@ -83,19 +85,17 @@ export default function AIChat() {
         error?: string
       }
 
+      if (!res.ok) {
+        setError(data.error || `Request failed (${res.status})`)
+        return
+      }
+
       setMessages((m) => [
         ...m,
-        { id: nextId++, role: "assistant", content: data.reply || data.error || "…" },
+        { id: nextId++, role: "assistant", content: data.reply || "…" },
       ])
     } catch {
-      setMessages((m) => [
-        ...m,
-        {
-          id: nextId++,
-          role: "assistant",
-          content: "Something went wrong reaching the server.",
-        },
-      ])
+      setError("Network error — the server might be offline.")
     } finally {
       setSending(false)
     }
@@ -148,7 +148,10 @@ export default function AIChat() {
             {messages.length > 0 && (
               <button
                 type="button"
-                onClick={() => setMessages([])}
+                onClick={() => {
+                  setMessages([])
+                  setError(null)
+                }}
                 title="Clear chat"
                 aria-label="Clear chat"
                 className="flex h-7 px-2 items-center justify-center rounded-md text-[11px] font-medium text-faint transition-colors hover:bg-surface-hover hover:text-foreground"
@@ -176,6 +179,12 @@ export default function AIChat() {
             </div>
           )}
 
+          {error && (
+            <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-[12px] leading-relaxed text-red-500">
+              {error}
+            </div>
+          )}
+
           {messages.map((m) => (
             <div
               key={m.id}
@@ -189,6 +198,18 @@ export default function AIChat() {
               </p>
             </div>
           ))}
+
+          {sending && (
+            <div className="flex items-end gap-2.5">
+              <AssistantIcon />
+              <div className="flex gap-1 rounded-2xl border border-border bg-surface px-4 py-3">
+                <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-faint" />
+                <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-faint [animation-delay:120ms]" />
+                <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-faint [animation-delay:240ms]" />
+              </div>
+            </div>
+          )}
+
           <div ref={endRef} />
         </div>
 
