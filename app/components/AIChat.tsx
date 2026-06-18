@@ -161,6 +161,21 @@ export default function AIChat() {
         </header>
 
         <div className="min-h-0 flex-1 space-y-4 overflow-y-auto bg-background px-4 py-5">
+          {messages.length === 0 && (
+            <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
+              <AssistantIcon />
+              <div>
+                <p className="text-[14px] font-semibold text-foreground">
+                  Ask me anything
+                </p>
+                <p className="mt-1 text-[12.5px] leading-relaxed text-muted">
+                  I can summarize posts, find topics, and help you explore
+                  the blog.
+                </p>
+              </div>
+            </div>
+          )}
+
           {messages.map((m) => (
             <div
               key={m.id}
@@ -168,6 +183,7 @@ export default function AIChat() {
                 m.role === "user" ? "justify-end" : ""
               }`}
             >
+              {m.role === "assistant" && <AssistantIcon />}
               <p className="max-w-[85%] whitespace-pre-wrap rounded-2xl border border-border bg-surface px-3.5 py-2.5 text-[13.5px] leading-relaxed text-foreground">
                 {m.content}
               </p>
