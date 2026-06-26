@@ -61,6 +61,7 @@ export default async function PostPage({
               alt=""
               fill
               unoptimized
+              priority
               className="object-cover"
             />
           </div>
@@ -68,7 +69,7 @@ export default async function PostPage({
 
         <article>
           <header className="mb-8">
-            <h1 className="text-[34px] font-bold leading-tight tracking-[-0.02em] text-foreground">
+            <h1 className="text-[30px] font-bold leading-tight tracking-tight text-foreground">
               {post.title}
             </h1>
             <div className="mt-2 flex items-center gap-1.5 text-[14px] text-muted">
