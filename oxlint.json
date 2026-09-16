@@ -1,0 +1,33 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
+  "rules": {
+    "correctness": "all",
+    "suspicious": "all",
+    "style": "warn",
+    "performance": "warn",
+    "complexity": "off",
+    "nextjs": "all",
+    "react": "all",
+    "react-hooks": "all",
+    "typescript": "all"
+  },
+  "ignorePatterns": [
+    "**/*.d.ts",
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+    "node_modules/**",
+    ".git/**",
+    "dist/**"
+  ]
+}

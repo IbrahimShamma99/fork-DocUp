@@ -1,0 +1,5 @@
+allowBuilds:
+  unrs-resolver: true
+
+# a package should be 3 years old to prevent a supply chain attack
+minimumReleaseAge: 4320
