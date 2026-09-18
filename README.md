@@ -12,18 +12,6 @@ DocUp is a lightweight personal blog and knowledge base built with Next.js, Reac
 - Dark mode support
 - AI chat assistant for filtering and content discovery
 
-## How to Use This Project
-
-DocUp is designed to be easy to fork and adapt. If you want to run your own version, follow these steps:
-
-1. Fork or clone this repository.
-2. Duplicate this [Template](https://abounding-egg-df0.notion.site/92d55087f118837d9ede81fd9411268d?v=3a755087f11883ebae9e089d719762a5).
-3. Install dependencies with `npm install`.
-4. Create a Notion database.
-5. Create a `.env` file with your Notion token and database ID.
-6. Optionally add an OpenRouter API key if you want the AI assistant enabled.
-7. Run `npm run dev` and start publishing posts.
-
 You can use this as either:
 
 - a personal blog
@@ -45,7 +33,7 @@ You can use this as either:
 1. Install dependencies:
 
 ```bash
-npm install
+pnpm install
 ```
 
 2. Create a `.env` file in the project root:
@@ -60,7 +48,7 @@ OPENROUTER_MODEL=openrouter/auto
 3. Start the development server:
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 4. Open http://localhost:3000 in your browser.
@@ -91,8 +79,6 @@ The app expects your Notion database to include properties that map to the field
 - `Tags`: multi-select tags
 - `Category`: select field for category
 
-
-
 ## Duplicateable Notion Template
 
 You can duplicate this structure in Notion and use it as the content source for DocUp.
@@ -100,20 +86,6 @@ You can duplicate this structure in Notion and use it as the content source for 
 [Template](https://abounding-egg-df0.notion.site/92d55087f118837d9ede81fd9411268d?v=3a755087f11883ebae9e089d719762a5)
 
 If you don't want to duplicate the template, you can still use your own Notion database as long as it has the same properties and naming.
-
-### Recommended database setup
-
-Create a database with these properties:
-
-- `Title` (title property)
-- `Slug` (text)
-- `Summary` (text or rich text)
-- `Type` (select, optional; set to `Post` if you want)
-- `Status` (select, optional; use `Public` for live posts)
-- `Date` (date)
-- `Thumbnail` (files & media)
-- `Tags` (multi-select)
-- `Category` (select)
 
 ### Example row
 
@@ -172,17 +144,3 @@ Each post has its own route at `/[slug]`, where the app fetches the page and ren
 ### AI assistant
 
 The assistant is available from the top bar. If `OPENROUTER_API_KEY` is missing, the app falls back to lightweight built-in guidance about using tags and categories instead of failing outright.
-
-## Project Structure
-
-```text
-app/
-  api/chat/route.ts
-  [slug]/page.tsx
-  components/
-  lib/
-    feed.ts
-    notion.ts
-    types.ts
-```
-
